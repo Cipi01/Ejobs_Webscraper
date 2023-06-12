@@ -34,4 +34,3 @@ df = pd.DataFrame(data_list, columns=columns)
 df = df.drop_duplicates()
 df.to_csv('test.csv', index=False)
 
-#TODO: Fix all functions with solution for edu req

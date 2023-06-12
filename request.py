@@ -2,9 +2,8 @@ import random
 import time
 import requests
 import pandas as pd
-from functions import get_keys_from_dict
+from functions import get_keys_from_dict, process_data
 from Dicts import region_dict, departments_dict, type_dict, edu_dict, level_dict, industry_dict
-
 # Initial request
 data_list = []
 
@@ -33,10 +32,7 @@ def init_req():
                 print(f"---TOO MUCH---")
                 break
             for i in data['jobs']:
-                job_id = i['id']
-                title = i['title']
-
-                data_list.append([job_id, title])
+                data_list.append(process_data(i))
 
         except KeyError:
             break
@@ -61,10 +57,8 @@ def department_req():
 
                 if 'jobs' in data:
                     for i in data['jobs']:
-                        job_id = i['id']
-                        title = i['title']
 
-                        data_list.append([job_id, title])
+                        data_list.append(process_data(i))
                 elif 'error' in data and page == 11:
                     print(f"---TOO MANY---{get_keys_from_dict(departments_dict, val_department)}")
                     department_list_plus.append(val_department)
@@ -98,10 +92,8 @@ def region_req(data_list):
 
                 if 'jobs' in data:
                     for i in data['jobs']:
-                        job_id = i['id']
-                        title = i['title']
+                        data_list.append(process_data(i))
 
-                        data_list.append([job_id, title])
                 elif 'error' in data and page == 11:
                     print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}")
                     region_list_plus.append(val_region)
@@ -133,15 +125,15 @@ def region_department_req(region_list_updated, department_list_updated, data_lis
 
                     if 'jobs' in data:
                         for i in data['jobs']:
-                            job_id = i['id']
-                            title = i['title']
 
-                            data_list.append([job_id, title])
+                            data_list.append(process_data(i))
                     elif 'error' in data and page == 11:
                         print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}---"
                               f"{get_keys_from_dict(departments_dict, val_department)}")
-                        region_dep_list_plus.append(val_region)
-                        dep_region_list_plus.append(val_department)
+                        if val_region not in region_dep_list_plus:
+                            region_dep_list_plus.append(val_region)
+                        if val_department not in dep_region_list_plus:
+                            dep_region_list_plus.append(val_department)
                         break
                     elif 'error' in data:
                         print(f"---OK---{get_keys_from_dict(region_dict, val_region)}---"
@@ -177,17 +169,18 @@ def reg_dep_type_req(region_list_updated, department_list_updated, data_list):
                     try:
                         if 'jobs' in data:
                             for i in data['jobs']:
-                                job_id = i['id']
-                                title = i['title']
 
-                                data_list.append([job_id, title])
+                                data_list.append(process_data(i))
                         elif 'error' in data and page == 11:
                             print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}---"
                                   f"{get_keys_from_dict(departments_dict, val_department)}---"
                                   f"{get_keys_from_dict(type_dict, val_type)}")
-                            region_dep_type_list_plus.append(val_region)
-                            dep_region_type_list_plus.append(val_department)
-                            type_region_dep_list_plus.append(val_type)
+                            if val_region not in region_dep_type_list_plus:
+                                region_dep_type_list_plus.append(val_region)
+                            if val_department not in dep_region_type_list_plus:
+                                dep_region_type_list_plus.append(val_department)
+                            if val_type not in type_region_dep_list_plus:
+                                type_region_dep_list_plus.append(val_type)
                             break
                         elif 'error' in data:
                             print(f"---OK---{get_keys_from_dict(region_dict, val_region)}---"
@@ -226,10 +219,7 @@ def reg_dep_tp_edu_req(region_list_updated, department_list_updated, type_list_u
                         try:
                             if 'jobs' in data:
                                 for i in data['jobs']:
-                                    job_id = i['id']
-                                    title = i['title']
-
-                                    data_list.append([job_id, title])
+                                    data_list.append(process_data(i))
 
                             elif 'error' in data and page == 11:
                                 print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}---"
@@ -242,7 +232,8 @@ def reg_dep_tp_edu_req(region_list_updated, department_list_updated, type_list_u
                                     dp_plus_list.append(val_department)
                                 if val_type not in tp_plus_list:
                                     tp_plus_list.append(val_type)
-                                ed_plus_list.append(val_edu)
+                                if val_edu not in ed_plus_list:
+                                    ed_plus_list.append(val_edu)
                                 break
                             elif 'error' in data:
                                 print(f"---OK---{get_keys_from_dict(region_dict, val_region)}---"
@@ -284,10 +275,7 @@ def reg_dep_tp_edu_level_req(region_list_updated, department_list_updated, type_
                             try:
                                 if 'jobs' in data:
                                     for i in data['jobs']:
-                                        job_id = i['id']
-                                        title = i['title']
-
-                                        data_list.append([job_id, title])
+                                        data_list.append(process_data(i))
 
                                 elif 'error' in data and page == 11:
                                     print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}---"
@@ -295,11 +283,16 @@ def reg_dep_tp_edu_level_req(region_list_updated, department_list_updated, type_
                                           f"{get_keys_from_dict(type_dict, val_type)}---"
                                           f"{get_keys_from_dict(edu_dict, val_edu)}---"
                                           f"{get_keys_from_dict(level_dict, val_level)}")
-                                    rg_plus_list.append(val_region)
-                                    dep_plus_list.append(val_department)
-                                    type_plus_list.append(val_type)
-                                    edu_plus_list.append(val_edu)
-                                    level_plus_list.append(val_level)
+                                    if val_region not in rg_plus_list:
+                                        rg_plus_list.append(val_region)
+                                    if val_department not in dep_plus_list:
+                                        dep_plus_list.append(val_department)
+                                    if val_type not in type_plus_list:
+                                        type_plus_list.append(val_type)
+                                    if val_edu not in edu_plus_list:
+                                        edu_plus_list.append(val_edu)
+                                    if val_level not in level_plus_list:
+                                        level_plus_list.append(val_level)
                                     break
                                 elif 'error' in data:
                                     print(f"---OK---{get_keys_from_dict(region_dict, val_region)}---"
@@ -346,10 +339,8 @@ def reg_dep_tp_edu_level_industry_req(region_list_updated, department_list_updat
                                 try:
                                     if 'jobs' in data:
                                         for i in data['jobs']:
-                                            job_id = i['id']
-                                            title = i['title']
 
-                                            data_list.append([job_id, title])
+                                            data_list.append(process_data(i))
                                     elif 'error' in data and page == 11:
                                         print(f"---TOO MANY---{get_keys_from_dict(region_dict, val_region)}---"
                                               f"{get_keys_from_dict(departments_dict, val_department)}---"
@@ -397,3 +388,4 @@ if __name__ == '__main__':
     df = pd.DataFrame(data_list, columns=columns)
     df = df.drop_duplicates()
     df.to_csv('test.csv', index=False)
+
