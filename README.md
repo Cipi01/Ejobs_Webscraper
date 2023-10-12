@@ -1,0 +1,3 @@
+#### This is a webscraper, part of a project that encompasses some of the most well-written (in my opinion) personal web scrapers, focusing on the automobiles and electronics domain. All web scrapers use the website's public API to receive the data, making them very accurate and capable of extracting a large amount of data.
+### EJOBS
+It takes 99 % of the jobs listed on the www.ejobs.ro site. It is a bit slow since the site only allows a limited amount of pages when no filters are applied, so if the limit is not reached, it omits some jobs. The program checks if the limit has been reached, if not, it applies another tier and extracts all the data presented.
